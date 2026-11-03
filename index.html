@@ -844,6 +844,175 @@
       margin-top: 2px;
     }
 
+    /* ── QUICK START SECTION ────────────────────────────────────────– */
+    .quickstart-section {
+      background: linear-gradient(135deg, #f8f8f8 0%, #ffffff 50%, #f5f5f5 100%);
+      padding: 5rem 2rem;
+      border-top: 1px solid #E0E0E0;
+      border-bottom: 1px solid #E0E0E0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .quickstart-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle at 20% 50%, rgba(86, 86, 86, 0.04) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 50%, rgba(132, 132, 132, 0.03) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .quickstart-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .quickstart-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .quickstart-header h2 {
+      font-size: clamp(2rem, 3.5vw, 2.5rem);
+      font-weight: 900;
+      color: #2B2B2B;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .quickstart-header p {
+      font-size: 1.05rem;
+      color: #848484;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .credentials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .credential-card {
+      background: #ffffff;
+      border: 1.5px solid #E0E0E0;
+      border-radius: 16px;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      animation: slideInUp 0.8s ease-out backwards;
+    }
+
+    .credential-card:nth-child(1) { animation-delay: 0.1s; }
+    .credential-card:nth-child(2) { animation-delay: 0.2s; }
+    .credential-card:nth-child(3) { animation-delay: 0.3s; }
+    .credential-card:nth-child(4) { animation-delay: 0.4s; }
+
+    .credential-card:hover {
+      border-color: #565656;
+      box-shadow: 0 8px 32px rgba(86, 86, 86, 0.12);
+      transform: translateY(-4px);
+    }
+
+    .credential-role {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1.2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #E0E0E0;
+    }
+
+    .role-icon {
+      font-size: 1.5rem;
+      background: linear-gradient(135deg, #565656, #2B2B2B);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .credential-role h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #2B2B2B;
+      margin: 0;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .credential-field {
+      margin-bottom: 1rem;
+    }
+
+    .credential-field label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #565656;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .credential-value {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f5f5f5;
+      border: 1px solid #E0E0E0;
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #2B2B2B;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .credential-value:hover {
+      background: #efefef;
+      border-color: #565656;
+      box-shadow: 0 2px 8px rgba(86, 86, 86, 0.1);
+    }
+
+    .copy-icon {
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      font-size: 0.9rem;
+    }
+
+    .credential-value:hover .copy-icon {
+      opacity: 1;
+    }
+
+    .quickstart-note {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #848484;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 1rem;
+      background: rgba(86, 86, 86, 0.05);
+      border-radius: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .credentials-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .quickstart-section {
+        padding: 3rem 1.5rem;
+      }
+    }
+
     /* ── TECH SECTION ────────────────────────────────────────– */
     .tech-section {
       background: #f5f5f5;
@@ -1352,14 +1521,57 @@
       color: #808080;
     }
 
-    body.dark-mode .tech-section {
-      background: #2a2a2a;
+    body.dark-mode .quickstart-section {
+      background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 50%, #252525 100%);
       border-top-color: #333333;
       border-bottom-color: #333333;
     }
 
-    body.dark-mode .tech-title {
+    body.dark-mode .quickstart-header h2 {
       color: #ffffff;
+    }
+
+    body.dark-mode .quickstart-header p {
+      color: #a0a0a0;
+    }
+
+    body.dark-mode .credential-card {
+      background: #333333;
+      border-color: #444444;
+    }
+
+    body.dark-mode .credential-card:hover {
+      border-color: #E0E0E0;
+      box-shadow: 0 8px 32px rgba(224, 224, 224, 0.12);
+    }
+
+    body.dark-mode .credential-role {
+      border-bottom-color: #444444;
+    }
+
+    body.dark-mode .credential-role h3 {
+      color: #ffffff;
+    }
+
+    body.dark-mode .credential-field label {
+      color: #a0a0a0;
+    }
+
+    body.dark-mode .credential-value {
+      background: #2a2a2a;
+      border-color: #444444;
+      color: #E0E0E0;
+    }
+
+    body.dark-mode .credential-value:hover {
+      background: #242424;
+      border-color: #E0E0E0;
+      box-shadow: 0 2px 8px rgba(224, 224, 224, 0.1);
+    }
+
+    body.dark-mode .quickstart-note {
+      background: rgba(255, 255, 255, 0.05);
+      color: #a0a0a0;
     }
 
     body.dark-mode .tech-badge {
@@ -1726,6 +1938,108 @@
     </div>
   </section>
 
+  <!-- ── QUICK START SECTION ────────────────────────────────────────– -->
+  <section class="quickstart-section">
+    <div class="quickstart-container">
+      <div class="quickstart-header">
+        <h2>Try It Now</h2>
+        <p>Test drive SMS with pre-configured demo accounts across all roles</p>
+      </div>
+
+      <div class="credentials-grid">
+        <!-- Admin -->
+        <div class="credential-card">
+          <div class="credential-role">
+            <span class="role-icon">◆</span>
+            <h3>Admin</h3>
+          </div>
+          <div class="credential-field">
+            <label>Email</label>
+            <div class="credential-value" onclick="copyToClipboard('m07939615@gmail.com')">
+              <span>m07939615@gmail.com</span>
+              <span class="copy-icon">📋</span>
+            </div>
+          </div>
+          <div class="credential-field">
+            <label>Password</label>
+            <div class="credential-value" onclick="copyToClipboard('1a2b3c4d')">
+              <span>1a2b3c4d</span>
+              <span class="copy-icon">📋</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Branch Manager -->
+        <div class="credential-card">
+          <div class="credential-role">
+            <span class="role-icon">→</span>
+            <h3>Branch Manager</h3>
+          </div>
+          <div class="credential-field">
+            <label>Email</label>
+            <div class="credential-value" onclick="copyToClipboard('jhonclarik@gmail.com')">
+              <span>jhonclarik@gmail.com</span>
+              <span class="copy-icon">📋</span>
+            </div>
+          </div>
+          <div class="credential-field">
+            <label>Password</label>
+            <div class="credential-value" onclick="copyToClipboard('1qazxcde3')">
+              <span>1qazxcde3</span>
+              <span class="copy-icon">📋</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cashier -->
+        <div class="credential-card">
+          <div class="credential-role">
+            <span class="role-icon">✦</span>
+            <h3>Cashier</h3>
+          </div>
+          <div class="credential-field">
+            <label>Email</label>
+            <div class="credential-value" onclick="copyToClipboard('amani546@gmail.com')">
+              <span>amani546@gmail.com</span>
+              <span class="copy-icon">📋</span>
+            </div>
+          </div>
+          <div class="credential-field">
+            <label>Password</label>
+            <div class="credential-value" onclick="copyToClipboard('1qazxsw2')">
+              <span>1qazxsw2</span>
+              <span class="copy-icon">📋</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inventory Manager -->
+        <div class="credential-card">
+          <div class="credential-role">
+            <span class="role-icon">◉</span>
+            <h3>Inventory</h3>
+          </div>
+          <div class="credential-field">
+            <label>Email</label>
+            <div class="credential-value" onclick="copyToClipboard('tomi234@gmail.com')">
+              <span>tomi234@gmail.com</span>
+              <span class="copy-icon">📋</span>
+            </div>
+          </div>
+          <div class="credential-field">
+            <label>Password</label>
+            <div class="credential-value" onclick="copyToClipboard('2wsxcde3')">
+              <span>2wsxcde3</span>
+              <span class="copy-icon">📋</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="quickstart-note">💡 Click any field to copy credentials. Each role has different permissions and features.</p>
+    </div>
+  </section>
+
   <!-- ── TECH SECTION ────────────────────────────────────────– -->
   <section class="tech-section" id="tech">
     <h2 class="tech-title">Enterprise Technology Stack</h2>
@@ -1939,6 +2253,15 @@
   </footer>
 
   <script>
+    // Copy to Clipboard Function
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert('✓ Copied: ' + text);
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+      });
+    }
+
     // Dark Mode Toggle
     const themeToggle = document.getElementById('themeToggle');
     const themeIcon = document.getElementById('themeIcon');
