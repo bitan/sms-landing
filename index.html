@@ -5,52 +5,83 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SuperMarket Management System — Full-Stack SaaS POS Platform</title>
   <meta name="description" content="A multi-tenant SaaS Supermarket Management System built with Node.js, React, PostgreSQL, Rust and Tauri. Features real-time POS, inventory management, offline desktop app, and comprehensive analytics." />
-
+  
   <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>" />
-
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◆</text></svg>" />
+  
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Theme Flash Prevention: Apply stored theme before render -->
+  <script>
+    const theme = localStorage.getItem('theme');
+    if (theme === 'dark') {
+      document.documentElement.style.colorScheme = 'dark';
+      document.documentElement.classList.add('dark-mode');
+      document.body.classList.add('dark-mode');
+    }
+  </script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --black:   #0a0a0a;
-      --white:   #ffffff;
-      --gray-50: #f9fafb;
-      --gray-100:#f3f4f6;
-      --gray-200:#e5e7eb;
-      --gray-400:#9ca3af;
-      --gray-600:#4b5563;
-      --gray-800:#1f2937;
-      --purple:  #7c3aed;
-      --purple-light: #ede9fe;
-      --green:   #10b981;
-      --blue:    #3b82f6;
-      --orange:  #f59e0b;
-      --red:     #ef4444;
+      --charcoal: #2B2B2B;
+      --ironclad: #565656;
+      --urban: #848484;
+      --moonlit: #B3B3B3;
+      --cloud: #E0E0E0;
+      
+      /* Light mode - using darker for text, lighter for backgrounds */
+      --bg-primary: #ffffff;
+      --bg-secondary: #E0E0E0;
+      --text-primary: #2B2B2B;
+      --text-secondary: #565656;
+      --text-tertiary: #848484;
+      --accent: #565656;
+      --border: #B3B3B3;
     }
 
-    html { scroll-behavior: smooth; }
+    /* CSS variables for easy reference */
+    :root {
+      --charcoal-dark: #2B2B2B;
+      --grey-mid-dark: #565656;
+      --grey-mid: #848484;
+      --grey-light: #B3B3B3;
+      --grey-lighter: #E0E0E0;
+      --white: #ffffff;
+    }
+
+    html { 
+      scroll-behavior: smooth;
+      background-image: 
+        linear-gradient(rgba(86, 86, 86, 0.15) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(86, 86, 86, 0.15) 1px, transparent 1px),
+        radial-gradient(circle at 50% 50%, rgba(86, 86, 86, 0.08), transparent 100%);
+      background-size: 50px 50px, 50px 50px, 100% 100%;
+      background-position: 0 0, 0 0, 0 0;
+      background-attachment: fixed;
+      background-color: #ffffff;
+    }
 
     body {
       font-family: 'Inter', sans-serif;
-      background: var(--white);
-      color: var(--gray-800);
+      background: var(--bg-primary);
+      color: var(--text-primary);
       line-height: 1.6;
       overflow-x: hidden;
     }
 
-    /* ── NAV ─────────────────────────────────────────────── */
+    /* ── NAVIGATION ────────────────────────────────────────── */
     nav {
       position: fixed;
       top: 0; left: 0; right: 0;
       z-index: 100;
-      background: rgba(255,255,255,0.85);
+      background: rgba(255,255,255,0.92);
       backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--gray-200);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid #B3B3B3;
       padding: 0 2rem;
       height: 64px;
       display: flex;
@@ -64,13 +95,13 @@
       gap: 10px;
       font-weight: 700;
       font-size: 1.1rem;
-      color: var(--black);
+      color: #2B2B2B;
       text-decoration: none;
     }
 
     .nav-logo-icon {
       width: 36px; height: 36px;
-      background: linear-gradient(135deg, #18181b, #3f3f46);
+      background: linear-gradient(135deg, #565656, #848484);
       border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
       color: white; font-size: 1rem;
@@ -79,151 +110,482 @@
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 2rem;
+      gap: 2.5rem;
       list-style: none;
     }
 
     .nav-links a {
       text-decoration: none;
-      color: var(--gray-600);
+      color: #848484;
       font-size: 0.9rem;
       font-weight: 500;
       transition: color 0.2s;
     }
 
-    .nav-links a:hover { color: var(--black); }
+    .nav-links a:hover { color: #565656; }
 
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .nav-actions .btn-primary {
+      padding: 8px 18px;
+      font-size: 0.85rem;
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      z-index: 101;
+    }
+
+    .hamburger span {
+      width: 24px;
+      height: 2.5px;
+      background: #2B2B2B;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    .hamburger.open span:nth-child(1) {
+      transform: rotate(45deg) translate(8px, 8px);
+    }
+
+    .hamburger.open span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.open span:nth-child(3) {
+      transform: rotate(-45deg) translate(7px, -7px);
+    }
+
+    /* ── DARK MODE TOGGLE ────────────────────────────────── */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: transparent;
+      border: 1.5px solid #E0E0E0;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1.1rem;
+      position: relative;
+      z-index: 50;
+    }
+
+    .theme-toggle:hover {
+      border-color: #2B2B2B;
+      background: #E0E0E0;
+    }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 64px;
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border-bottom: 1px solid #E0E0E0;
+      padding: 1.5rem;
+      flex-direction: column;
+      gap: 1rem;
+      z-index: 99;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .mobile-menu.open {
+      display: flex;
+    }
+
+    .mobile-menu a {
+      text-decoration: none;
+      color: #848484;
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 8px 0;
+      border-bottom: 1px solid #E0E0E0;
+      transition: color 0.2s;
+    }
+
+    .mobile-menu a:last-child {
+      border-bottom: none;
+    }
+
+    .mobile-menu a:hover {
+      color: #565656;
+    }
+
+    /* ── BUTTONS ───────────────────────────────────────────── */
     .btn {
       display: inline-flex;
       align-items: center;
       gap: 8px;
       padding: 10px 22px;
-      border-radius: 12px;
+      border-radius: 18px;
       font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
       text-decoration: none;
-      transition: all 0.2s;
+      transition: all 0.3s ease;
       border: none;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, #18181b, #3f3f46);
-      color: white;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+      background: linear-gradient(135deg, #565656, #2B2B2B);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(86, 86, 86, 0.3);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      box-shadow: 0 8px 24px rgba(86, 86, 86, 0.4);
     }
 
     .btn-outline {
       background: transparent;
-      color: var(--gray-800);
-      border: 1.5px solid var(--gray-200);
+      color: #2B2B2B;
+      border: 1.5px solid rgba(86, 86, 86, 0.3);
     }
 
     .btn-outline:hover {
-      background: var(--gray-50);
-      border-color: var(--gray-400);
+      background: rgba(86, 86, 86, 0.08);
+      border-color: #565656;
+      color: #565656;
     }
 
-    .btn-demo {
-      background: linear-gradient(135deg, #7c3aed, #6d28d9);
-      color: white;
-      box-shadow: 0 4px 14px rgba(124,58,237,0.35);
-      padding: 14px 32px;
-      font-size: 1rem;
-      border-radius: 14px;
+    .btn-white {
+      background: #ffffff;
+      color: #2B2B2B;
+      font-weight: 700;
+      border: none;
     }
 
-    .btn-demo:hover {
+    .btn-white:hover {
+      background: #E0E0E0;
       transform: translateY(-2px);
-      box-shadow: 0 8px 28px rgba(124,58,237,0.45);
+      box-shadow: 0 8px 20px rgba(43, 43, 43, 0.2);
     }
 
-    /* ── HERO ─────────────────────────────────────────────── */
+    .btn-ghost {
+      background: rgba(86, 86, 86, 0.12);
+      color: #565656;
+      border: 1.5px solid rgba(86, 86, 86, 0.3);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(86, 86, 86, 0.2);
+      box-shadow: 0 0 20px rgba(86, 86, 86, 0.2);
+    }
+
+    /* ── HERO SECTION ────────────────────────────────────── */
     .hero {
-      padding: 140px 2rem 80px;
-      text-align: center;
-      background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
+      padding: 70px 3rem 70px;
+      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 50%, #f0f0f0 100%);
       position: relative;
       overflow: hidden;
+      margin-top: 64px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
     }
 
+    .hero-content {
+      flex: 0 0 50%;
+      max-width: 500px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .hero-content > * {
+      animation: slideInUp 0.8s ease-out backwards;
+      text-align: left;
+    }
+
+    .hero-content .hero-badge {
+      animation-delay: 0.1s;
+    }
+
+    .hero-content h1 {
+      animation-delay: 0.2s;
+    }
+
+    .hero-content p {
+      animation-delay: 0.3s;
+    }
+
+    .hero-content .hero-buttons {
+      animation-delay: 0.4s;
+    }
+
+    @media (max-width: 1200px) {
+      .hero {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 100px 2rem 60px;
+        gap: 2rem;
+        min-height: auto;
+      }
+
+      .hero-content {
+        flex: none;
+        max-width: 100%;
+        text-align: center;
+      }
+
+      .hero-content > * {
+        text-align: center;
+      }
+
+      .hero-buttons {
+        justify-content: center !important;
+      }
+
+      .preview-wrapper {
+        flex: none !important;
+        width: 100% !important;
+        height: auto !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hero {
+        padding: 80px 1.5rem 50px;
+        gap: 1.5rem;
+      }
+    }
+
+    /* Animated gradient orbs */
     .hero::before {
       content: '';
       position: absolute;
-      top: -200px; left: 50%;
-      transform: translateX(-50%);
-      width: 800px; height: 800px;
-      background: radial-gradient(circle, rgba(124,58,237,0.06) 0%, transparent 70%);
+      top: -150px;
+      right: -200px;
+      width: 900px;
+      height: 900px;
+      background: radial-gradient(circle, rgba(86, 86, 86, 0.25) 0%, rgba(86, 86, 86, 0.1) 20%, transparent 60%);
+      border-radius: 50%;
+      filter: blur(70px);
+      animation: floatOrb1 10s ease-in-out infinite;
       pointer-events: none;
+      z-index: 2;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -250px;
+      left: -300px;
+      width: 750px;
+      height: 750px;
+      background: radial-gradient(circle, rgba(86, 86, 86, 0.2) 0%, rgba(86, 86, 86, 0.08) 25%, transparent 65%);
+      border-radius: 50%;
+      filter: blur(80px);
+      animation: floatOrb2 12s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Additional subtle orb in center */
+    .hero-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .hero-orb-1 {
+      width: 500px;
+      height: 500px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(86, 86, 86, 0.15) 0%, transparent 70%);
+      animation: floatOrb3 15s ease-in-out infinite;
+    }
+
+    @keyframes floatOrb3 {
+      0%, 100% { transform: translate(-50%, -50%); }
+      50% { transform: translate(-30%, -60%); }
     }
 
     .hero-badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: var(--purple-light);
-      color: var(--purple);
-      padding: 6px 16px;
+      background: rgba(86, 86, 86, 0.12);
+      color: #565656;
+      padding: 8px 16px;
       border-radius: 100px;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: 600;
       margin-bottom: 1.5rem;
       letter-spacing: 0.02em;
+      animation: slideInDown 0.6s ease-out;
+      position: relative;
+      z-index: 10;
+      border: 1px solid rgba(86, 86, 86, 0.3);
+      text-transform: uppercase;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    @keyframes slideInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Floating Decorative Badges */
+    .floating-badge {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+      pointer-events: none;
+      animation: float 3.5s ease-in-out infinite;
+      z-index: 5;
+      opacity: 0.9;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-14px); }
+    }
+
+    .floating-badge.badge-1 {
+      top: 120px;
+      left: -40px;
+      background: rgba(86, 86, 86, 0.12);
+      color: #565656;
+      border: 1px solid rgba(86, 86, 86, 0.25);
+      animation-delay: 0s;
+      animation-duration: 3.2s;
+    }
+
+    .floating-badge.badge-2 {
+      top: 280px;
+      right: -50px;
+      background: rgba(86, 86, 86, 0.1);
+      color: #565656;
+      border: 1px solid rgba(86, 86, 86, 0.2);
+      animation-delay: 0.6s;
+      animation-duration: 3.8s;
+    }
+
+    .floating-badge.badge-3 {
+      bottom: 180px;
+      left: -35px;
+      background: rgba(86, 86, 86, 0.12);
+      color: #565656;
+      border: 1px solid rgba(86, 86, 86, 0.25);
+      animation-delay: 1.2s;
+      animation-duration: 3.5s;
+    }
+
+    .floating-badge.badge-4 {
+      bottom: 60px;
+      right: -45px;
+      background: rgba(86, 86, 86, 0.1);
+      color: #565656;
+      border: 1px solid rgba(86, 86, 86, 0.2);
+      animation-delay: 1.8s;
+      animation-duration: 3.9s;
     }
 
     .hero h1 {
-      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
       font-weight: 900;
-      line-height: 1.1;
-      color: var(--black);
-      max-width: 800px;
-      margin: 0 auto 1.5rem;
+      line-height: 1.15;
+      color: #0a0a0a;
+      max-width: 600px;
+      margin: 0 0 1.5rem;
       letter-spacing: -0.03em;
+      animation: slideInUp 0.8s ease-out 0.1s backwards;
+      position: relative;
+      z-index: 10;
+      text-align: left;
     }
 
     .hero h1 span {
-      background: linear-gradient(135deg, #7c3aed, #3b82f6);
+      background: linear-gradient(135deg, #565656, #2B2B2B);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      animation: gradientShift 3s ease-in-out infinite;
     }
 
     .hero p {
-      font-size: 1.15rem;
-      color: var(--gray-600);
-      max-width: 580px;
-      margin: 0 auto 2.5rem;
+      font-size: 1.05rem;
+      color: #555555;
+      max-width: 480px;
+      margin: 0 0 2.5rem;
       line-height: 1.7;
+      animation: slideInUp 0.8s ease-out 0.15s backwards;
+      position: relative;
+      z-index: 10;
+      text-align: left;
     }
 
     .hero-buttons {
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       gap: 1rem;
       flex-wrap: wrap;
       margin-bottom: 3rem;
+      position: relative;
+      z-index: 10;
     }
 
-    /* ── DEMO CARD ────────────────────────────────────────── */
+    .hero-buttons .btn {
+      animation: slideInUp 0.8s ease-out backwards;
+    }
+
+    .hero-buttons .btn:nth-child(1) {
+      animation-delay: 0.2s;
+    }
+
+    .hero-buttons .btn:nth-child(2) {
+      animation-delay: 0.3s;
+    }
+
     .demo-card {
-      display: inline-block;
-      background: white;
-      border: 1.5px solid var(--gray-200);
-      border-radius: 16px;
-      padding: 1rem 2rem;
-      margin-bottom: 3rem;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+      display: none;
     }
 
     .demo-card p {
       font-size: 0.85rem;
-      color: var(--gray-600);
+      color: #848484;
       margin: 0 0 0.5rem;
     }
 
@@ -243,251 +605,271 @@
     }
 
     .cred-label {
-      color: var(--gray-400);
+      color: #B3B3B3;
       font-weight: 500;
     }
 
     .cred-value {
       font-family: 'Courier New', monospace;
       font-weight: 700;
-      color: var(--black);
-      background: var(--gray-100);
+      color: #2B2B2B;
+      background: #E0E0E0;
       padding: 3px 10px;
       border-radius: 6px;
       font-size: 0.85rem;
     }
 
-    /* ── SCREENSHOT PREVIEW ───────────────────────────────── */
+    /* ── SCREENSHOT PREVIEW ────────────────────────────────── */
     .preview-wrapper {
-      max-width: 1000px;
-      margin: 0 auto;
-      position: relative;
-    }
-
-    .preview-browser {
-      background: var(--gray-800);
-      border-radius: 16px 16px 0 0;
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .browser-dot {
-      width: 12px; height: 12px;
-      border-radius: 50%;
-    }
-
-    .browser-bar {
       flex: 1;
-      background: var(--gray-600);
-      height: 26px;
-      border-radius: 6px;
-      margin: 0 12px;
-      display: flex;
-      align-items: center;
-      padding: 0 12px;
-      font-size: 0.75rem;
-      color: var(--gray-400);
-    }
-
-    .preview-screen {
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      border-radius: 0 0 16px 16px;
-      padding: 2rem;
-      min-height: 360px;
+      min-width: 400px;
+      max-width: none;
+      animation: fadeInUp 0.8s ease-out 0.5s forwards;
+      opacity: 0;
+      z-index: 5;
+      position: relative;
+      height: 500px;
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    .preview-screens {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Screenshot Styling */
+    .screenshot {
+      position: absolute;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      background: white;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .screenshot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Top Right - report.png (top-left corner) */
+    .screenshot-top-left {
+      width: 33%;
+      height: 50%;
+      top: 6%;
+      left: 20%;
+      z-index: 7;
+      animation: float 4.5s ease-in-out infinite 0.1s;
+    }
+
+    /* Top Left - pos.png (top-right corner) */
+    .screenshot-top-right {
+      width: 44%;
+      height: 64%;
+      top: 10%;
+    
+      right: 1%;
+      left: auto;
+      z-index: 6;
+      animation: float 4.8s ease-in-out infinite 0.15s;
+    }
+
+    /* Center - profit.png (center, largest, overlaps all) */
+    .screenshot-center {
+      width: 55%;
+      height: 82%;
+      top: 41%;
+      left: 30%;
+      transform: translate(-50%, -50%);
+      z-index: 20;
+      animation: float 4s ease-in-out infinite;
+    }
+
+    /* Bottom Left - stock.png (bottom-right area) */
+    .screenshot-bottom-right {
+      width: 30%;
+      height: 50%;
+      
+      right: 8%;
+      top: 100%;
+      left: auto;
+      z-index: 11;
+      animation: float 5s ease-in-out infinite 0.2s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-12px); }
+    }
+
+    .screenshot-center {
+      animation: float 4s ease-in-out infinite;
+    }
+
+    @media (max-width: 1200px) {
+      .preview-wrapper {
+        flex: none;
+        width: 100%;
+        min-width: auto;
+        max-width: 100%;
+        animation: fadeInUp 0.8s ease-out 0.4s forwards;
+        height: 500px;
+        margin-top: 2rem;
+      }
+
+      .screenshot {
+        position: static !important;
+        width: 100% !important;
+        height: auto !important;
+        margin-bottom: -50px;
+        z-index: 0 !important;
+      }
+
+      .screenshot img {
+        width: 100%;
+        height: auto;
+      }
+
+      .screenshot-center {
+        z-index: 5 !important;
+        margin-bottom: 0;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .preview-wrapper {
+        height: auto;
+      }
+
+      .screenshot {
+        display: none;
+      }
+
+      .screenshot-center {
+        display: block !important;
+        position: static !important;
+        width: 100% !important;
+        height: auto !important;
+        margin: 0 !important;
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+
+
+    /* ── STATS BAND ────────────────────────────────────────– */
+    .stats-band {
+      background: linear-gradient(135deg, #f0f0f0 0%, #f8f8f8 100%);
+      padding: 1rem 0;
+      border-top: 1px solid rgba(86, 86, 86, 0.2);
+      border-bottom: 1px solid rgba(86, 86, 86, 0.2);
+      position: relative;
+      overflow: hidden;
+      height: auto;
+    }
+
+    .stats-carousel {
+      width: 100%;
       overflow: hidden;
       position: relative;
     }
 
-    .preview-dashboard {
-      width: 100%;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-    }
-
-    .preview-card {
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 12px;
-      padding: 16px;
-    }
-
-    .preview-card-label {
-      font-size: 0.65rem;
-      color: rgba(255,255,255,0.4);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 6px;
-    }
-
-    .preview-card-value {
-      font-size: 1.4rem;
-      font-weight: 800;
-      color: white;
-      margin-bottom: 4px;
-    }
-
-    .preview-card-sub {
-      font-size: 0.65rem;
-      color: #10b981;
-      font-weight: 600;
-    }
-
-    .preview-chart {
-      grid-column: span 2;
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 12px;
-      padding: 16px;
-      min-height: 140px;
+    .stats-track {
       display: flex;
-      align-items: flex-end;
-      gap: 6px;
+      gap: 3rem;
+      animation: scrollStats 40s linear infinite;
+      will-change: transform;
     }
 
-    .chart-bar {
-      flex: 1;
-      border-radius: 4px 4px 0 0;
-      background: linear-gradient(180deg, #7c3aed, #6d28d9);
-      transition: height 0.3s ease;
-    }
-
-    /* ── STATS BAND ────────────────────────────────────────── */
-    .stats-band {
-      background: var(--black);
-      padding: 3rem 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4rem;
-      flex-wrap: wrap;
+    @keyframes scrollStats {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(calc(-50% - 1.5rem));
+      }
     }
 
     .stat-item {
       text-align: center;
+      position: relative;
+      z-index: 2;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 1.5rem;
+      min-width: 180px;
     }
 
     .stat-number {
-      font-size: 2.2rem;
+      font-size: 1.5rem;
       font-weight: 900;
-      color: white;
+      color: #2B2B2B;
       letter-spacing: -0.03em;
     }
 
     .stat-number span {
-      background: linear-gradient(135deg, #7c3aed, #3b82f6);
+      background: linear-gradient(135deg, #565656, #2B2B2B);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
     .stat-label {
-      font-size: 0.85rem;
-      color: var(--gray-400);
+      font-size: 0.75rem;
+      color: #666666;
       font-weight: 500;
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
-    /* ── FEATURES ──────────────────────────────────────────── */
-    section {
-      padding: 5rem 2rem;
+    /* ── TECH SECTION ────────────────────────────────────────– */
+    .tech-section {
+      background: #f5f5f5;
+      padding: 4rem 2rem;
+      border-top: 1px solid #E0E0E0;
+      border-bottom: 1px solid #E0E0E0;
     }
 
-    .section-label {
+    .tech-label {
       font-size: 0.8rem;
       font-weight: 700;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--purple);
+      color: #565656;
       margin-bottom: 0.75rem;
       text-align: center;
     }
 
-    .section-title {
-      font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+    .tech-title {
+      font-size: clamp(1.8rem, 3.5vw, 2.2rem);
       font-weight: 800;
       text-align: center;
-      color: var(--black);
+      color: #2B2B2B;
       letter-spacing: -0.02em;
-      max-width: 600px;
-      margin: 0 auto 1rem;
-    }
-
-    .section-sub {
-      text-align: center;
-      color: var(--gray-600);
-      max-width: 520px;
-      margin: 0 auto 3rem;
-      font-size: 1.05rem;
-    }
-
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    .feature-card {
-      background: var(--gray-50);
-      border: 1.5px solid var(--gray-200);
-      border-radius: 20px;
-      padding: 2rem;
-      transition: all 0.3s ease;
-    }
-
-    .feature-card:hover {
-      background: white;
-      border-color: var(--gray-300);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.08);
-      transform: translateY(-4px);
-    }
-
-    .feature-icon {
-      width: 52px; height: 52px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      margin-bottom: 1.25rem;
-    }
-
-    .feature-card h3 {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--black);
-      margin-bottom: 0.6rem;
-    }
-
-    .feature-card p {
-      font-size: 0.9rem;
-      color: var(--gray-600);
-      line-height: 1.65;
-    }
-
-    .feature-tag {
-      display: inline-block;
-      margin-top: 1rem;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--purple);
-      background: var(--purple-light);
-      padding: 3px 10px;
-      border-radius: 100px;
-    }
-
-    /* ── TECH STACK ────────────────────────────────────────── */
-    .tech-section {
-      background: var(--gray-50);
-      border-top: 1px solid var(--gray-200);
-      border-bottom: 1px solid var(--gray-200);
+      max-width: 500px;
+      margin: 0 auto 2.5rem;
     }
 
     .tech-grid {
@@ -503,34 +885,167 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      background: white;
-      border: 1.5px solid var(--gray-200);
+      background: #ffffff;
+      border: 1.5px solid #E0E0E0;
       border-radius: 12px;
       padding: 10px 18px;
       font-size: 0.9rem;
       font-weight: 600;
-      color: var(--gray-800);
-      transition: all 0.2s;
+      color: #565656;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
 
     .tech-badge:hover {
-      border-color: var(--purple);
-      color: var(--purple);
+      border-color: #565656;
+      color: #565656;
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(124,58,237,0.12);
+      box-shadow: 0 4px 12px rgba(86, 86, 86, 0.2), 0 0 20px rgba(86, 86, 86, 0.12);
     }
 
     .tech-dot {
       width: 8px; height: 8px;
       border-radius: 50%;
+      background: #565656;
     }
 
-    /* ── SECURITY ──────────────────────────────────────────── */
+    /* ── FEATURE SECTION (ALTERNATING LAYOUT) ───────────────– */
+    .feature-section {
+      padding: 5rem 2rem;
+      background: #ffffff;
+    }
+
+    .feature-section.alt {
+      background: #f8f8f8;
+    }
+
+    .feature-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .feature-container.reverse {
+      direction: rtl;
+    }
+
+    .feature-container.reverse > * {
+      direction: ltr;
+    }
+
+    .feature-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .feature-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #565656;
+      margin-bottom: 0.75rem;
+    }
+
+    .feature-title {
+      font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+      font-weight: 800;
+      color: #2B2B2B;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .feature-desc {
+      font-size: 1.05rem;
+      color: #848484;
+      margin-bottom: 1.5rem;
+      line-height: 1.7;
+    }
+
+    .feature-list {
+      list-style: none;
+      margin-bottom: 2rem;
+    }
+
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 0.8rem;
+      font-size: 0.95rem;
+      color: #565656;
+      line-height: 1.6;
+    }
+
+    .feature-list li::before {
+      content: '✓';
+      color: #565656;
+      font-weight: 700;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      margin-top: -2px;
+    }
+
+    .feature-image {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.12);
+      animation: fadeInUp 0.8s ease-out forwards;
+      opacity: 0;
+      backdrop-filter: blur(8px);
+    }
+
+    .feature-image img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* ── SECURITY SECTION ───────────────────────────────────– */
+    .security-section {
+      padding: 5rem 2rem;
+      background: #ffffff;
+    }
+
+    .section-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #565656;
+      margin-bottom: 0.75rem;
+      text-align: center;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+      font-weight: 800;
+      text-align: center;
+      color: #2B2B2B;
+      letter-spacing: -0.02em;
+      max-width: 600px;
+      margin: 0 auto 1rem;
+    }
+
+    .section-sub {
+      text-align: center;
+      color: #848484;
+      max-width: 520px;
+      margin: 0 auto 3rem;
+      font-size: 1.05rem;
+    }
+
     .security-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1rem;
-      max-width: 900px;
+      gap: 1.5rem;
+      max-width: 1000px;
       margin: 0 auto;
     }
 
@@ -538,10 +1053,19 @@
       display: flex;
       align-items: flex-start;
       gap: 12px;
-      background: white;
-      border: 1.5px solid var(--gray-200);
+      background: #ffffff;
+      border: 1.5px solid #E0E0E0;
       border-radius: 14px;
-      padding: 1.2rem;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .security-item:hover {
+      border-color: #565656;
+      box-shadow: 0 4px 20px rgba(86, 86, 86, 0.15), 0 0 15px rgba(86, 86, 86, 0.1);
+      transform: translateY(-2px);
     }
 
     .security-check {
@@ -554,40 +1078,58 @@
       justify-content: center;
       font-size: 0.9rem;
       flex-shrink: 0;
+      font-weight: 700;
     }
 
     .security-item h4 {
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       font-weight: 700;
-      color: var(--black);
+      color: #2B2B2B;
       margin-bottom: 2px;
     }
 
     .security-item p {
-      font-size: 0.8rem;
-      color: var(--gray-600);
+      font-size: 0.85rem;
+      color: #848484;
+      line-height: 1.5;
     }
 
-    /* ── CTA ───────────────────────────────────────────────── */
+    /* ── CTA SECTION ──────────────────────────────────────────– */
     .cta-section {
-      background: linear-gradient(135deg, #18181b 0%, #3f3f46 100%);
+      background: linear-gradient(135deg, #f5f5f5 0%, #f0f0f0 100%);
       text-align: center;
       padding: 6rem 2rem;
+      position: relative;
+      overflow: hidden;
+      border-top: 2px solid #565656;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle at 30% 50%, rgba(86, 86, 86, 0.06) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 50%, rgba(132, 132, 132, 0.04) 0%, transparent 50%);
+      pointer-events: none;
     }
 
     .cta-section h2 {
       font-size: clamp(1.8rem, 3.5vw, 2.8rem);
       font-weight: 900;
-      color: white;
+      color: #2B2B2B;
       letter-spacing: -0.03em;
       margin-bottom: 1rem;
+      position: relative;
+      z-index: 1;
     }
 
     .cta-section p {
-      color: rgba(255,255,255,0.6);
+      color: #666666;
       font-size: 1.05rem;
       max-width: 480px;
       margin: 0 auto 2rem;
+      position: relative;
+      z-index: 1;
     }
 
     .cta-buttons {
@@ -596,393 +1138,894 @@
       justify-content: center;
       gap: 1rem;
       flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
     }
 
-    .btn-white {
-      background: white;
-      color: var(--black);
-      font-weight: 700;
-    }
-
-    .btn-white:hover {
-      background: var(--gray-100);
-      transform: translateY(-2px);
-    }
-
-    .btn-ghost {
-      background: rgba(255,255,255,0.1);
-      color: white;
-      border: 1.5px solid rgba(255,255,255,0.2);
-    }
-
-    .btn-ghost:hover {
-      background: rgba(255,255,255,0.18);
-    }
-
-    /* ── FOOTER ────────────────────────────────────────────── */
+    /* ── FOOTER ───────────────────────────────────────────────– */
     footer {
-      background: var(--black);
-      border-top: 1px solid #1f1f1f;
-      padding: 2rem;
-      text-align: center;
-      color: var(--gray-400);
-      font-size: 0.85rem;
+      background: linear-gradient(135deg, #2B2B2B 0%, #1a1a1a 100%);
+      border-top: 2px solid #565656;
+      padding: 1.5rem 2rem;
+      position: relative;
+      overflow: hidden;
     }
 
-    footer a {
-      color: var(--gray-400);
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #565656, transparent);
+      opacity: 0.5;
+    }
+
+    footer::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(86, 86, 86, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(86, 86, 86, 0.03) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      animation: slideInUp 0.8s ease-out backwards 0.4s;
+    }
+
+    .footer-copyright {
+      color: #808080;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .footer-socials {
+      display: flex;
+      gap: 0.8rem;
+    }
+
+    .social-icon {
+      width: 32px;
+      height: 32px;
+      background: rgba(86, 86, 86, 0.15);
+      border: 1.5px solid rgba(86, 86, 86, 0.3);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #B3B3B3;
       text-decoration: none;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
     }
 
-    footer a:hover { color: white; }
+    .social-icon:hover {
+      background: rgba(86, 86, 86, 0.3);
+      border-color: #B3B3B3;
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(86, 86, 86, 0.2);
+    }
 
-    /* ── MOBILE ────────────────────────────────────────────── */
+    /* ── DARK MODE ────────────────────────────────────────────– */
+    body.dark-mode {
+      background: #1a1a1a;
+      color: #E0E0E0;
+    }
+
+    html.dark-mode {
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05), transparent 100%);
+      background-size: 50px 50px, 50px 50px, 100% 100%;
+      background-position: 0 0, 0 0, 0 0;
+      background-attachment: fixed;
+      background-color: #1a1a1a;
+    }
+
+    body.dark-mode nav {
+      background: rgba(26, 26, 26, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom-color: #333333;
+    }
+
+    body.dark-mode .nav-logo {
+      color: #ffffff;
+    }
+
+    body.dark-mode .nav-links a {
+      color: #a0a0a0;
+    }
+
+    body.dark-mode .nav-links a:hover {
+      color: #B3B3B3;
+    }
+
+    body.dark-mode .hamburger span {
+      background: #ffffff;
+    }
+
+    body.dark-mode .theme-toggle {
+      border-color: #333333;
+      background: rgba(255,255,255,0.05);
+    }
+
+    body.dark-mode .theme-toggle:hover {
+      border-color: #ffffff;
+      background: rgba(255,255,255,0.1);
+    }
+
+    body.dark-mode .hero {
+      background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%);
+    }
+
+    body.dark-mode .hero h1 {
+      color: #ffffff;
+    }
+
+    body.dark-mode .hero p {
+      color: #b0b0b0;
+    }
+
+    body.dark-mode .hero-badge {
+      background: rgba(86, 86, 86, 0.15);
+      color: #E0E0E0;
+      border-color: rgba(86, 86, 86, 0.3);
+    }
+
+    body.dark-mode .floating-badge {
+      background: rgba(255,255,255,0.08);
+      color: #ffffff;
+      border-color: rgba(255,255,255,0.15);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
+
+    body.dark-mode .demo-card {
+      background: #2a2a2a;
+      border-color: #333333;
+    }
+
+    body.dark-mode .demo-card p {
+      color: #a0a0a0;
+    }
+
+    body.dark-mode .cred-label {
+      color: #808080;
+    }
+
+    body.dark-mode .cred-value {
+      background: #333333;
+      color: #ffffff;
+    }
+
+    body.dark-mode .preview-screen {
+      background: linear-gradient(135deg, #2a2a2a 0%, #333333 100%);
+    }
+
+    body.dark-mode .preview-card {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.1);
+    }
+
+    body.dark-mode .preview-card-label {
+      color: rgba(255,255,255,0.4);
+    }
+
+    body.dark-mode .preview-card-value {
+      color: #ffffff;
+    }
+
+    body.dark-mode .preview-card-sub {
+      color: #a0a0a0;
+    }
+
+    body.dark-mode .preview-chart {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.1);
+    }
+
+    body.dark-mode .stats-band {
+      background: linear-gradient(135deg, #2a2a2a 0%, #333333 100%);
+      border-color: rgba(86, 86, 86, 0.3);
+    }
+
+    body.dark-mode .stat-number {
+      color: #ffffff;
+    }
+
+    body.dark-mode .stat-label {
+      color: #808080;
+    }
+
+    body.dark-mode .tech-section {
+      background: #2a2a2a;
+      border-top-color: #333333;
+      border-bottom-color: #333333;
+    }
+
+    body.dark-mode .tech-title {
+      color: #ffffff;
+    }
+
+    body.dark-mode .tech-badge {
+      background: #333333;
+      border-color: #444444;
+      color: #a0a0a0;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    body.dark-mode .tech-badge:hover {
+      border-color: #E0E0E0;
+      color: #E0E0E0;
+      box-shadow: 0 4px 12px rgba(224, 224, 224, 0.2), 0 0 20px rgba(224, 224, 224, 0.15);
+    }
+
+    body.dark-mode .feature-section {
+      background: #1a1a1a;
+    }
+
+    body.dark-mode .feature-section.alt {
+      background: #2a2a2a;
+    }
+
+    body.dark-mode .feature-title {
+      color: #ffffff;
+    }
+
+    body.dark-mode .feature-desc {
+      color: #a0a0a0;
+    }
+
+    body.dark-mode .feature-list li {
+      color: #a0a0a0;
+    }
+
+    body.dark-mode .security-section {
+      background: #1a1a1a;
+    }
+
+    body.dark-mode .section-title {
+      color: #ffffff;
+    }
+
+    body.dark-mode .section-sub {
+      color: #a0a0a0;
+    }
+
+    body.dark-mode .security-item {
+      background: #2a2a2a;
+      border-color: #333333;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    body.dark-mode .security-item:hover {
+      border-color: #E0E0E0;
+      box-shadow: 0 4px 20px rgba(224, 224, 224, 0.15), 0 0 15px rgba(224, 224, 224, 0.1);
+    }
+
+    body.dark-mode .security-item h4 {
+      color: #ffffff;
+    }
+
+    body.dark-mode .security-item p {
+      color: #a0a0a0;
+    }
+
+    body.dark-mode .cta-section {
+      background: linear-gradient(135deg, #2a2a2a 0%, #333333 100%);
+      border-top-color: #565656;
+    }
+
+    body.dark-mode .cta-section::before {
+      background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.05) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 50%, rgba(200,200,200,0.03) 0%, transparent 50%);
+    }
+
+    body.dark-mode .cta-section h2 {
+      color: #ffffff;
+    }
+
+    body.dark-mode .cta-section p {
+      color: #a0a0a0;
+    }
+
+    body.dark-mode .btn-ghost {
+      background: rgba(86, 86, 86, 0.15);
+      color: #E0E0E0;
+      border-color: rgba(86, 86, 86, 0.4);
+    }
+
+    body.dark-mode .btn-ghost:hover {
+      background: rgba(86, 86, 86, 0.25);
+    }
+
+    body.dark-mode .mobile-menu {
+      background: #2a2a2a;
+      border-bottom-color: #333333;
+    }
+
+    body.dark-mode .mobile-menu a {
+      color: #a0a0a0;
+      border-bottom-color: #333333;
+    }
+
+    body.dark-mode .mobile-menu a:hover {
+      color: #E0E0E0;
+    }
+
+    body.dark-mode footer {
+      background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+      border-top-color: #565656;
+    }
+
+    body.dark-mode footer a {
+      color: #a0a0a0;
+    }
+
+    body.dark-mode footer a:hover {
+      color: #E0E0E0;
+    }
+
+    body.dark-mode .footer-section h3 {
+      color: #E0E0E0;
+    }
+
+    body.dark-mode .footer-copyright {
+      color: #808080;
+    }
+
+    body.dark-mode .social-icon {
+      background: rgba(86, 86, 86, 0.15);
+      border-color: rgba(86, 86, 86, 0.3);
+      color: #E0E0E0;
+    }
+
+    body.dark-mode .social-icon:hover {
+      background: rgba(86, 86, 86, 0.3);
+      border-color: #E0E0E0;
+      box-shadow: 0 8px 24px rgba(224, 224, 224, 0.2);
+    }
+
+    body.dark-mode .btn-outline {
+      background: transparent;
+      color: #E0E0E0;
+      border: 1.5px solid #333333;
+    }
+
+    body.dark-mode .btn-outline:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: #B3B3B3;
+    }
+
+    /* ── RESPONSIVE DESIGN ────────────────────────────────────– */
+    @media (max-width: 1024px) {
+      .stats-band {
+        padding: 0.8rem 0;
+      }
+
+      .stat-item {
+        min-width: 140px;
+        padding: 0 1rem;
+        gap: 1.5rem;
+      }
+
+      .stat-number {
+        font-size: 1.3rem;
+      }
+    }
+
     @media (max-width: 768px) {
-      nav { padding: 0 1rem; }
-      .nav-links { display: none; }
-      .hero { padding: 100px 1.5rem 60px; }
-      .stats-band { gap: 2rem; padding: 2.5rem 1.5rem; }
-      .preview-dashboard { grid-template-columns: repeat(2, 1fr); }
-      .preview-chart { grid-column: span 2; }
-      section { padding: 3.5rem 1.5rem; }
+      .stats-band {
+        padding: 0.6rem 0;
+      }
+
+      .stat-item {
+        min-width: 120px;
+        padding: 0 0.8rem;
+      }
+
+      .stat-number {
+        font-size: 1.1rem;
+      }
+
+      .stat-label {
+        font-size: 0.7rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero h1 {
+        font-size: 1.5rem;
+      }
+
+      .hero p {
+        font-size: 0.9rem;
+      }
+
+      .feature-title {
+        font-size: 1.5rem;
+      }
+
+      .section-title {
+        font-size: 1.5rem;
+      }
+
+      .cta-section h2 {
+        font-size: 1.5rem;
+      }
+
+      .stat-number {
+        font-size: 1.5rem;
+      }
+
+      .floating-badge {
+        font-size: 0.65rem;
+        padding: 6px 10px;
+      }
+
+      .nav-actions .btn-primary {
+        display: none;
+      }
+    }
+
+    /* ── ACCESSIBILITY: REDUCED MOTION ────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* ── KEYBOARD FOCUS INDICATORS ────────────────────────── */
+    .btn:focus-visible,
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible {
+      outline: 2px solid #565656;
+      outline-offset: 2px;
+    }
+
+    body.dark-mode .btn:focus-visible,
+    body.dark-mode a:focus-visible,
+    body.dark-mode button:focus-visible,
+    body.dark-mode input:focus-visible {
+      outline-color: #E0E0E0;
     }
   </style>
 </head>
-
 <body>
-
-  <!-- ── NAV ─────────────────────────────────────────────────────── -->
+  <!-- ── NAVIGATION ────────────────────────────────────────– -->
   <nav>
     <a href="#" class="nav-logo">
-      <div class="nav-logo-icon">🛒</div>
-      SMS
+      <div class="nav-logo-icon">◆</div>
+      <span>SMS</span>
     </a>
     <ul class="nav-links">
       <li><a href="#features">Features</a></li>
-      <li><a href="#tech">Tech Stack</a></li>
+      <li><a href="#tech">Technology</a></li>
       <li><a href="#security">Security</a></li>
-      <li><a href="https://github.com/bitan/supermarket-management-system" target="_blank">GitHub</a></li>
     </ul>
-    <a href="https://smsfe.ziimarket.com/login" target="_blank" class="btn btn-primary">
-      Try Demo →
-    </a>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+        <span id="themeIcon">◐</span>
+      </button>
+      <button class="btn btn-primary" onclick="window.location.href='https://smsfe.ziimarket.com/'">Visit Demo</button>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
   </nav>
 
-  <!-- ── HERO ────────────────────────────────────────────────────── -->
-  <div class="hero">
-    <div class="hero-badge">
-      ✦ Full-Stack SaaS Project
-    </div>
+  <!-- ── MOBILE MENU ────────────────────────────────────────– -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#features">Features</a>
+    <a href="#tech">Technology</a>
+    <a href="#security">Security</a>
+  </div>
 
-    <h1>
-      Supermarket Management<br />
-      <span>Built for the Real World</span>
-    </h1>
-
-    <p>
-      A production-ready multi-tenant SaaS platform for retail supermarket operations —
-      POS, inventory, real-time stock sync, offline desktop app, and deep analytics.
-      Built solo from requirements through deployment.
-    </p>
-
-    <div class="hero-buttons">
-      <a href="https://smsfe.ziimarket.com/login" target="_blank" class="btn btn-demo">
-        🚀 Try Live Demo
-      </a>
-      <a href="https://github.com/bitan/supermarket-management-system" target="_blank" class="btn btn-outline">
-        ⭐ View Source Code
-      </a>
-    </div>
-
-    <!-- Demo Credentials Card -->
-    <div class="demo-card">
-      <p>Use these credentials to explore the full system:</p>
-      <div class="demo-credentials">
-        <div class="cred">
-          <span class="cred-label">Email</span>
-          <span class="cred-value">demo@sms.com</span>
-        </div>
-        <div class="cred">
-          <span class="cred-label">Password</span>
-          <span class="cred-value">Demo@2025</span>
-        </div>
-        <div class="cred">
-          <span class="cred-label">Role</span>
-          <span class="cred-value">Super Admin</span>
-        </div>
+  <!-- ── HERO SECTION ────────────────────────────────────────– -->
+  <section class="hero">
+    <div class="hero-orb hero-orb-1"></div>
+    
+    <div class="hero-content">
+      <h1>Complete POS & Inventory <span>Management System</span></h1>
+      <p>All-in-one platform for retail management. Real-time analytics, multi-location support, and offline functionality for modern supermarkets.</p>
+      <div class="hero-buttons">
+        <button class="btn btn-primary" onclick="scrollToSection('features')">Get Started</button>
+        <button class="btn btn-outline" onclick="window.location.href='https://smsfe.ziimarket.com/'">See Demo</button>
       </div>
     </div>
 
-    <!-- Browser Preview -->
     <div class="preview-wrapper">
-      <div class="preview-browser">
-        <div class="browser-dot" style="background:#ef4444"></div>
-        <div class="browser-dot" style="background:#f59e0b"></div>
-        <div class="browser-dot" style="background:#10b981"></div>
-        <div class="browser-bar">https://smsfe.ziimarket.com/dashboard</div>
+      <div class="preview-screens">
+        <!-- Bottom Right (above center) - stock.png -->
+        <div class="screenshot screenshot-bottom-right">
+          <img src="images/stock.png" alt="Stock and Inventory Management Dashboard" loading="lazy" />
+        </div>
+        <!-- Center - profit.png (largest) -->
+        <div class="screenshot screenshot-center">
+          <img src="images/profit.png" alt="Profit and Revenue Analytics Dashboard" loading="lazy" />
+        </div>
+
+        <!-- Top Left (under center) - report.png -->
+        <div class="screenshot screenshot-top-left">
+          <img src="images/report.png" alt="Sales Reports and Performance Metrics" loading="lazy" />
+        </div>
+
+        <!-- Top Right (under center) - pos.png -->
+        <div class="screenshot screenshot-top-right">
+          <img src="images/pos.png" alt="Point of Sale Terminal Interface" loading="lazy" />
+        </div>
+
+       
       </div>
-      <div class="preview-screen">
-        <div class="preview-dashboard">
-          <div class="preview-card">
-            <div class="preview-card-label">Today's Revenue</div>
-            <div class="preview-card-value">ETB 7,513</div>
-            <div class="preview-card-sub">↑ +12% vs yesterday</div>
-          </div>
-          <div class="preview-card">
-            <div class="preview-card-label">Today's Orders</div>
-            <div class="preview-card-value">18</div>
-            <div class="preview-card-sub">↑ +3 vs yesterday</div>
-          </div>
-          <div class="preview-card">
-            <div class="preview-card-label">Total Products</div>
-            <div class="preview-card-value">58</div>
-            <div class="preview-card-sub">3 low stock alerts</div>
-          </div>
-          <div class="preview-card">
-            <div class="preview-card-label">Monthly Revenue</div>
-            <div class="preview-card-value">ETB 124K</div>
-            <div class="preview-card-sub">↑ +8% this month</div>
-          </div>
-          <div class="preview-chart" id="chart">
-          </div>
-          <div class="preview-card" style="grid-column: span 2;">
-            <div class="preview-card-label">Top Products This Week</div>
-            <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;">
-              <div style="display:flex;align-items:center;justify-content:space-between;">
-                <span style="color:rgba(255,255,255,0.7);font-size:0.8rem;">Coca Cola 500ml</span>
-                <span style="color:#10b981;font-size:0.75rem;font-weight:700;">ETB 3,250</span>
-              </div>
-              <div style="display:flex;align-items:center;justify-content:space-between;">
-                <span style="color:rgba(255,255,255,0.7);font-size:0.8rem;">Sunflower Oil 1L</span>
-                <span style="color:#10b981;font-size:0.75rem;font-weight:700;">ETB 2,850</span>
-              </div>
-              <div style="display:flex;align-items:center;justify-content:space-between;">
-                <span style="color:rgba(255,255,255,0.7);font-size:0.8rem;">White Teff 1kg</span>
-                <span style="color:#10b981;font-size:0.75rem;font-weight:700;">ETB 2,125</span>
-              </div>
-            </div>
-          </div>
+    </div>
+  </section>
+
+  <!-- ── STATS BAND ────────────────────────────────────────– -->
+  <section class="stats-band">
+    <div class="stats-carousel">
+      <div class="stats-track">
+        <!-- Original stats -->
+        <div class="stat-item">
+          <div class="stat-number"><span>50K+</span></div>
+          <div class="stat-label">Transactions Daily</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number"><span>99.9%</span></div>
+          <div class="stat-label">Uptime SLA</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number"><span>25ms</span></div>
+          <div class="stat-label">Avg Response Time</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number"><span>500+</span></div>
+          <div class="stat-label">Active Stores</div>
+        </div>
+        
+        <!-- Duplicated stats for seamless loop -->
+        <div class="stat-item">
+          <div class="stat-number"><span>50K+</span></div>
+          <div class="stat-label">Transactions Daily</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number"><span>99.9%</span></div>
+          <div class="stat-label">Uptime SLA</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number"><span>25ms</span></div>
+          <div class="stat-label">Avg Response Time</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number"><span>500+</span></div>
+          <div class="stat-label">Active Stores</div>
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- ── STATS ────────────────────────────────────────────────────── -->
-  <div class="stats-band">
-    <div class="stat-item">
-      <div class="stat-number"><span>31,400</span></div>
-      <div class="stat-label">Lines of Code</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-number"><span>260</span></div>
-      <div class="stat-label">Automated Tests</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-number"><span>40+</span></div>
-      <div class="stat-label">API Endpoints</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-number"><span>31</span></div>
-      <div class="stat-label">Database Tables</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-number"><span>4</span></div>
-      <div class="stat-label">Security Bugs Fixed via TDD</div>
-    </div>
-  </div>
-
-  <!-- ── FEATURES ─────────────────────────────────────────────────── -->
-  <section id="features">
-    <div class="section-label">What It Does</div>
-    <h2 class="section-title">Everything a supermarket needs in one platform</h2>
-    <p class="section-sub">Built to solve real operational problems in Ethiopian retail — from checkout to stock management to financial reporting.</p>
-
-    <div class="features-grid">
-
-      <div class="feature-card">
-        <div class="feature-icon" style="background:#ede9fe;">🛒</div>
-        <h3>Point of Sale</h3>
-        <p>Barcode scanning, cart management, promo codes, multiple payment methods (cash, card, mobile), and thermal receipt printing. Works offline on Windows via the desktop app.</p>
-        <span class="feature-tag">Real-time stock deduction</span>
-      </div>
-
-      <div class="feature-card">
-        <div class="feature-icon" style="background:#d1fae5;">📦</div>
-        <h3>Multi-Location Inventory</h3>
-        <p>Track stock across warehouses, shelves, and store rooms. The POS automatically filters to show only shelf-ready stock. Location-branch validation enforced on every write.</p>
-        <span class="feature-tag">Shelf vs warehouse separation</span>
-      </div>
-
-      <div class="feature-card">
-        <div class="feature-icon" style="background:#dbeafe;">⚡</div>
-        <h3>Real-Time Stock Sync</h3>
-        <p>When any cashier completes a sale, all connected POS terminals instantly update via WebSocket. No overselling. Missed events are replayed when a terminal reconnects.</p>
-        <span class="feature-tag">WebSocket + event replay</span>
-      </div>
-
-      <div class="feature-card">
-        <div class="feature-icon" style="background:#fef3c7;">💻</div>
-        <h3>Offline Desktop POS</h3>
-        <p>A native Windows application (Tauri + Rust) that stores sales in local SQLite when offline. Automatically syncs to the server when connectivity is restored using idempotency keys.</p>
-        <span class="feature-tag">Tauri + Rust + SQLite</span>
-      </div>
-
-      <div class="feature-card">
-        <div class="feature-icon" style="background:#fce7f3;">📊</div>
-        <h3>Deep Analytics</h3>
-        <p>Dashboard KPIs, 30-day revenue trends, profit and loss reports, top products, employee performance, dead stock alerts, and hourly sales heatmaps. All exportable to CSV.</p>
-        <span class="feature-tag">11 report types</span>
-      </div>
-
-      <div class="feature-card">
-        <div class="feature-icon" style="background:#f0fdf4;">🏢</div>
-        <h3>Multi-Tenant SaaS</h3>
-        <p>Multiple independent supermarket businesses on one deployment. Complete data isolation at the query level — one tenant can never see another's data, enforced on every API call.</p>
-        <span class="feature-tag">Shared-DB tenant isolation</span>
-      </div>
-
-      <div class="feature-card">
-        <div class="feature-icon" style="background:#fff7ed;">🔄</div>
-        <h3>Full Operations Suite</h3>
-        <p>Purchase orders with partial receives, sales returns with over-return prevention, physical stock takes with discrepancy tracking, and shift management with atomic totals.</p>
-        <span class="feature-tag">ACID transactions throughout</span>
-      </div>
-
-      <div class="feature-card">
-        <div class="feature-icon" style="background:#f1f5f9;">👥</div>
-        <h3>Role-Based Access Control</h3>
-        <p>Five user roles — Platform Admin, Super Admin, Branch Admin, Cashier, Inventory Manager. Branch-level isolation: cashiers can only see and sell their own branch's products.</p>
-        <span class="feature-tag">Configurable per tenant</span>
-      </div>
-
-      <div class="feature-card">
-        <div class="feature-icon" style="background:#fef2f2;">📋</div>
-        <h3>Immutable Audit Log</h3>
-        <p>Every significant action — sales, stock adjustments, user changes — is recorded with a user identity snapshot. The log is read-only, ordered newest first, and filterable by entity type.</p>
-        <span class="feature-tag">Tamper-evident trail</span>
-      </div>
-
-    </div>
   </section>
 
-  <!-- ── TECH STACK ────────────────────────────────────────────────── -->
-  <section id="tech" class="tech-section">
-    <div class="section-label">How It Was Built</div>
-    <h2 class="section-title">Modern full-stack technology choices</h2>
-    <p class="section-sub">Every technology was chosen for a specific reason — not just because it's popular.</p>
-
+  <!-- ── TECH SECTION ────────────────────────────────────────– -->
+  <section class="tech-section" id="tech">
+    <h2 class="tech-title">Enterprise Technology Stack</h2>
     <div class="tech-grid">
-      <div class="tech-badge"><div class="tech-dot" style="background:#68a063"></div>Node.js 20</div>
-      <div class="tech-badge"><div class="tech-dot" style="background:#000"></div>Express 4</div>
-      <div class="tech-badge"><div class="tech-dot" style="background:#336791"></div>PostgreSQL 16</div>
-      <div class="tech-badge"><div class="tech-dot" style="background:#5a67d8"></div>Prisma ORM</div>
-      <div class="tech-badge"><div class="tech-dot" style="background:#61dafb"></div>React 19</div>
-      <div class="tech-badge"><div class="tech-dot" style="background:#38bdf8"></div>Tailwind CSS</div>
-      <div class="tech-badge"><div class="tech-dot" style="background:#f97316"></div>Tauri</div>
-      <div class="tech-badge"><div class="tech-dot" style="background:#b7410e"></div>Rust</div>
-      <div class="tech-badge"><div class="tech-dot" style="background:#003545"></div>SQLite</div>
-      <div class="tech-badge"><div class="tech-dot" style="background:#0db7ed"></div>Docker</div>
-      <div class="tech-badge"><div class="tech-dot" style="background:#333"></div>GitHub Actions</div>
-      <div class="tech-badge"><div class="tech-dot" style="background:#7c3aed"></div>WebSocket (ws)</div>
-      <div class="tech-badge"><div class="tech-dot" style="background:#e11d48"></div>JWT + bcrypt</div>
-      <div class="tech-badge"><div class="tech-dot" style="background:#22c55e"></div>Recharts</div>
+      <div class="tech-badge">
+        <span class="tech-dot"></span>
+        Node.js & Express
+      </div>
+      <div class="tech-badge">
+        <span class="tech-dot"></span>
+        React & TypeScript
+      </div>
+      <div class="tech-badge">
+        <span class="tech-dot"></span>
+        PostgreSQL
+      </div>
+      <div class="tech-badge">
+        <span class="tech-dot"></span>
+        Redis Cache
+      </div>
+      <div class="tech-badge">
+        <span class="tech-dot"></span>
+        Docker
+      </div>
+      <div class="tech-badge">
+        <span class="tech-dot"></span>
+        Rust Backend
+      </div>
+      <div class="tech-badge">
+        <span class="tech-dot"></span>
+        Tauri Desktop
+      </div>
+      <div class="tech-badge">
+        <span class="tech-dot"></span>
+        AWS Cloud
+      </div>
     </div>
   </section>
 
-  <!-- ── SECURITY ──────────────────────────────────────────────────── -->
-  <section id="security">
-    <div class="section-label">Security Engineering</div>
-    <h2 class="section-title">4 real vulnerabilities found and fixed through TDD</h2>
-    <p class="section-sub">The 260-test automated suite was designed adversarially — tests that attempt to violate security boundaries caught real bugs before deployment.</p>
+  <!-- ── FEATURE SECTION 1: POS (TEXT LEFT, IMAGE RIGHT) ────────────– -->
+  <section class="feature-section" id="features">
+    <div class="feature-container">
+      <div class="feature-content">
+        <h2 class="feature-title">Modern POS System</h2>
+        <p class="feature-desc">Lightning-fast checkout with real-time inventory sync, multiple payment methods, and offline fallback</p>
+        <ul class="feature-list">
+          <li>Instant transaction processing</li>
+          <li>Multiple payment gateways support</li>
+          <li>Receipt printing & digital receipts</li>
+          <li>Customer loyalty programs</li>
+        </ul>
+        <button class="btn btn-primary">Learn More</button>
+      </div>
+      <div class="feature-image">
+        <img src="images/pos.png" alt="Modern Point of Sale System with Fast Checkout Processing" loading="lazy" />
+      </div>
+    </div>
+  </section>
 
+  <!-- ── FEATURE SECTION 2: INVENTORY (IMAGE LEFT, TEXT RIGHT) ──────────– -->
+  <section class="feature-section alt">
+    <div class="feature-container reverse">
+      <div class="feature-content">
+        <h2 class="feature-title">Smart Stock Control</h2>
+        <p class="feature-desc">Real-time inventory tracking across multiple locations with automated alerts and predictive restocking</p>
+        <ul class="feature-list">
+          <li>Multi-location stock tracking</li>
+          <li>Automatic low-stock alerts</li>
+          <li>Barcode scanning & SKU management</li>
+          <li>Waste & expiry tracking</li>
+        </ul>
+        <button class="btn btn-primary">Learn More</button>
+      </div>
+      <div class="feature-image">
+        <img src="images/inventory.png" alt="Real-time Inventory Tracking with Multi-Location Support" loading="lazy" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FEATURE SECTION 3: ANALYTICS (TEXT LEFT, IMAGE RIGHT) ──────────– -->
+  <section class="feature-section">
+    <div class="feature-container">
+      <div class="feature-content">
+        <h2 class="feature-title">Data-Driven Insights</h2>
+        <p class="feature-desc">Comprehensive dashboards with real-time metrics, predictive analytics, and customizable reports</p>
+        <ul class="feature-list">
+          <li>Real-time sales dashboards</li>
+          <li>Customer behavior analytics</li>
+          <li>Profit margin tracking</li>
+          <li>Customizable reports & exports</li>
+        </ul>
+        <button class="btn btn-primary">Learn More</button>
+      </div>
+      <div class="feature-image">
+        <img src="images/report.png" alt="Data-Driven Analytics with Comprehensive Sales Reports" loading="lazy" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FEATURE SECTION 4: LOCATIONS (IMAGE LEFT, TEXT RIGHT) ──────────– -->
+  <section class="feature-section alt">
+    <div class="feature-container reverse">
+      <div class="feature-content">
+        <h2 class="feature-title">Centralized Management</h2>
+        <p class="feature-desc">Manage unlimited store locations with centralized inventory, unified reporting, and location-specific controls</p>
+        <ul class="feature-list">
+          <li>Unified location dashboard</li>
+          <li>Cross-store inventory transfers</li>
+          <li>Location-based reporting</li>
+          <li>Regional performance metrics</li>
+        </ul>
+        <button class="btn btn-primary">Learn More</button>
+      </div>
+      <div class="feature-image">
+        <img src="images/location.png" alt="Centralized Management Dashboard for Multiple Store Locations" loading="lazy" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FEATURE SECTION 5: OFFLINE (TEXT LEFT, IMAGE RIGHT) ──────────– -->
+  <section class="feature-section">
+    <div class="feature-container">
+      <div class="feature-content">
+        <h2 class="feature-title">Never Stop Selling</h2>
+        <p class="feature-desc">Desktop app with full functionality offline, automatic sync when connection returns, zero transaction loss</p>
+        <ul class="feature-list">
+          <li>Complete offline POS system</li>
+          <li>Automatic data synchronization</li>
+          <li>Zero transaction loss guarantee</li>
+          <li>Cross-platform desktop app</li>
+        </ul>
+        <button class="btn btn-primary">Learn More</button>
+      </div>
+      <div class="feature-image">
+        <img src="images/stock.png" alt="Offline Desktop Application for Uninterrupted Sales Operations" loading="lazy" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SECURITY SECTION ────────────────────────────────────────– -->
+  <section class="security-section" id="security">
+    <h2 class="section-title">Enterprise-Grade Security</h2>
+    <p class="section-sub">Bank-level encryption, compliance certifications, and security audits</p>
     <div class="security-grid">
       <div class="security-item">
         <div class="security-check">✓</div>
         <div>
-          <h4>Logout token invalidation</h4>
-          <p>Access token remained valid after logout until JWT expiry. Fixed with an in-memory blocklist.</p>
+          <h4>End-to-End Encryption</h4>
+          <p>All data encrypted in transit and at rest with AES-256</p>
         </div>
       </div>
       <div class="security-item">
         <div class="security-check">✓</div>
         <div>
-          <h4>Cross-branch sale exploit</h4>
-          <p>Cashier from Branch B could sell Branch A's products by supplying the product ID directly.</p>
+          <h4>Role-Based Access</h4>
+          <p>Granular permissions and multi-level authentication</p>
         </div>
       </div>
       <div class="security-item">
         <div class="security-check">✓</div>
         <div>
-          <h4>Cross-branch location assignment</h4>
-          <p>Products could be assigned locations from other branches, causing them to disappear from the POS silently.</p>
+          <h4>PCI-DSS Compliant</h4>
+          <p>Full PCI DSS Level 1 compliance for payment security</p>
         </div>
       </div>
       <div class="security-item">
         <div class="security-check">✓</div>
         <div>
-          <h4>Hourly heatmap SQL error</h4>
-          <p>GROUP BY EXTRACT() syntax rejected by PostgreSQL (code 42803), causing 500 errors on the reports page.</p>
+          <h4>Audit Logging</h4>
+          <p>Complete audit trails for all transactions and changes</p>
+        </div>
+      </div>
+      <div class="security-item">
+        <div class="security-check">✓</div>
+        <div>
+          <h4>Regular Backups</h4>
+          <p>Automated daily backups with disaster recovery</p>
+        </div>
+      </div>
+      <div class="security-item">
+        <div class="security-check">✓</div>
+        <div>
+          <h4>Security Audits</h4>
+          <p>Third-party penetration testing and security reviews</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── CTA ──────────────────────────────────────────────────────── -->
-  <div class="cta-section">
-    <h2>See it running live</h2>
-    <p>Log in with the demo credentials and explore the full system — POS, inventory, reports, and more.</p>
+  <!-- ── CTA SECTION ────────────────────────────────────────– -->
+  <section class="cta-section">
+    <h2>Ready to Transform Your Supermarket?</h2>
+    <p>Join hundreds of supermarkets using SMS to streamline operations and boost profitability</p>
+  </section>
 
-    <div class="cta-buttons">
-      <a href="https://smsfe.ziimarket.com/login" target="_blank" class="btn btn-white">
-        🚀 Open Live Demo
-      </a>
-      <a href="https://github.com/bitan/supermarket-management-system" target="_blank" class="btn btn-ghost">
-        ⭐ View on GitHub
-      </a>
-    </div>
-
-    <div style="margin-top:2rem;display:flex;align-items:center;justify-content:center;gap:2rem;flex-wrap:wrap;">
-      <div class="cred" style="color:rgba(255,255,255,0.6);">
-        <span class="cred-label" style="color:rgba(255,255,255,0.4)">Email</span>
-        <span class="cred-value">demo@sms.com</span>
-      </div>
-      <div class="cred" style="color:rgba(255,255,255,0.6);">
-        <span class="cred-label" style="color:rgba(255,255,255,0.4)">Password</span>
-        <span class="cred-value">Demo@2025</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── FOOTER ────────────────────────────────────────────────────── -->
+  <!-- ── FOOTER ────────────────────────────────────────– -->
   <footer>
-    <p>
-      Built by <strong style="color:white">Bitanya Tigabe</strong> · Haramaya University · Software Engineering · 2025–2026
-      &nbsp;·&nbsp;
-      <a href="https://github.com/bitan/supermarket-management-system" target="_blank">GitHub</a>
-    </p>
+    <div class="footer-content">
+      <div class="footer-bottom">
+        <div class="footer-copyright">
+          <p>&copy; 2024 Supermarket Management System. All rights reserved.</p>
+        </div>
+        <div class="footer-socials">
+          <a href="#" class="social-icon" title="Twitter">𝕏</a>
+          <a href="#" class="social-icon" title="GitHub">→</a>
+          <a href="#" class="social-icon" title="LinkedIn">◉</a>
+          <a href="#" class="social-icon" title="Discord">✦</a>
+        </div>
+      </div>
+    </div>
   </footer>
 
-  <!-- ── CHART ANIMATION ───────────────────────────────────────────── -->
   <script>
-    // Animate the chart bars in the preview
-    const chart = document.getElementById('chart');
-    const heights = [40, 65, 45, 80, 55, 90, 70, 85, 60, 95, 75, 88, 50, 72];
-    heights.forEach(h => {
-      const bar = document.createElement('div');
-      bar.className = 'chart-bar';
-      bar.style.height = '0px';
-      bar.style.opacity = '0.85';
-      chart.appendChild(bar);
-      setTimeout(() => { bar.style.height = `${h}px`; }, 300 + Math.random() * 400);
+    // Dark Mode Toggle
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const htmlElement = document.documentElement;
+
+    // Check localStorage for theme preference
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    if (savedTheme === 'dark') {
+      document.body.classList.add('dark-mode');
+      htmlElement.classList.add('dark-mode');
+      themeIcon.textContent = '◑';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      htmlElement.classList.toggle('dark-mode');
+      const isDarkMode = document.body.classList.contains('dark-mode');
+      localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+      themeIcon.textContent = isDarkMode ? '◑' : '◐';
     });
 
-    // Auto-fill demo credentials when clicking Try Demo
-    document.querySelectorAll('a[href*="https://smsfe.ziimarket.com"]').forEach(link => {
-      link.addEventListener('click', (e) => {
-        // Just open the link — credentials are shown on the page
+    // Hamburger Menu
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileMenu.classList.toggle('open');
+    });
+
+    // Close mobile menu on link click
+    document.querySelectorAll('.mobile-menu a').forEach(link => {
+      link.addEventListener('click', () => {
+        hamburger.classList.remove('open');
+        mobileMenu.classList.remove('open');
       });
     });
-  </script>
 
+    // Also close menu on nav links
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        hamburger.classList.remove('open');
+        mobileMenu.classList.remove('open');
+      });
+    });
+
+    // Scroll to section
+    function scrollToSection(sectionId) {
+      const section = document.getElementById(sectionId);
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    // Scroll animations for feature images
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.animation = 'fadeInUp 0.8s ease-out forwards';
+          const delay = entry.target.getAttribute('data-delay') || 0;
+          entry.target.style.animationDelay = delay + 'ms';
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.feature-image').forEach((el, index) => {
+      el.setAttribute('data-delay', index * 100);
+      observer.observe(el);
+    });
+
+    // Scroll to top on hash navigation
+    window.addEventListener('load', () => {
+      if (window.location.hash) {
+        const target = document.querySelector(window.location.hash);
+        if (target) {
+          setTimeout(() => {
+            target.scrollIntoView({ behavior: 'smooth' });
+          }, 100);
+        }
+      }
+    });
+  </script>
 </body>
 </html>
